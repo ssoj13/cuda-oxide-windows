@@ -123,11 +123,11 @@ const WINDOWS_MSVC_LINKER_ENV: &str = "CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKE
 const WINDOWS_MSVC_LLD_LINKER: &str = "lld-link";
 
 pub(crate) const PINNED_SOURCE_REPOSITORY: &str =
-    "https://github.com/ansidium/cuda-oxide-windows.git";
+    "ssh://git@github.com/ssoj13/cuda-oxide-windows.git";
 // This source commit may intentionally precede the cargo-oxide CLI commit:
 // embedding a commit's own SHA is impossible. It must nevertheless contain
 // the complete backend and library migration for the selected compiler.
-pub(crate) const PINNED_SOURCE_REVISION: &str = "6ea8a95523129beb694687ae2b294e296ca1404a";
+pub(crate) const PINNED_SOURCE_REVISION: &str = "2c11cc5108bb3bbe9e0d97222cfa529ee237e051";
 
 struct BackendCacheLock {
     file: std::fs::File,
