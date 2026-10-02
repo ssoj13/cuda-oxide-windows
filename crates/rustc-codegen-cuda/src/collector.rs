@@ -1478,13 +1478,16 @@ impl<'tcx> DeviceCollector<'tcx> {
         //   Call in MIR: scale<T>(...)  (args = [T])
         //   After substitution: scale::<f32> (args = [f32])
         //
-        // Stable rustc exposes these built-MIR FnDef args directly. Substitute
-        // the caller's still-generic early-bound parameters below.
+        // Substitute the caller's still-generic early-bound parameters before
+        // extracting the FnDef arguments from their late-bound binder.
         let args = self.tcx.instantiate_and_normalize_erasing_regions(
             caller.instance.args,
             TypingEnv::fully_monomorphized(),
             EarlyBinder::bind(self.tcx, *args),
         );
+        let args = args
+            .no_bound_vars()
+            .expect("monomorphized callee arguments must not contain bound variables");
 
         // The call site is the best span while the caller is user code;
         // afterwards keep the last user-code span recorded on the walk. Used
@@ -1813,9 +1816,9 @@ impl<'tcx> DeviceCollector<'tcx> {
                 ("closure", instance)
             }
             TyKind::FnDef(fn_def_id, fn_args) => {
-                // Stable rustc exposes the fully monomorphized FnDef args
-                // directly at this point.
-                let fn_args = *fn_args;
+                let fn_args = fn_args
+                    .no_bound_vars()
+                    .expect("monomorphized function item must not contain bound variables");
                 let Some(instance) =
                     Instance::try_resolve(self.tcx, typing_env, *fn_def_id, fn_args)
                         .ok()

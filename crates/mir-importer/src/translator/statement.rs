@@ -74,7 +74,7 @@ pub fn translate_statement(
     block_ptr: Ptr<BasicBlock>,
     prev_op: Option<Ptr<Operation>>,
 ) -> TranslationResult<Option<Ptr<Operation>>> {
-    let loc = span_to_location(ctx, stmt.span);
+    let loc = span_to_location(ctx, stmt.source_info.span);
 
     match &stmt.kind {
         mir::StatementKind::Assign(place, rvalue) => {

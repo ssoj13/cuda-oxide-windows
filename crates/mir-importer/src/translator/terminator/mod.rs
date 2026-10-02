@@ -113,7 +113,7 @@ pub fn translate_terminator(
     rustc_mono_successors: &[usize],
     legaliser: &mut Legaliser,
 ) -> TranslationResult<Ptr<Operation>> {
-    let loc = span_to_location(ctx, term.span);
+    let loc = span_to_location(ctx, term.source_info.span);
 
     match &term.kind {
         mir::TerminatorKind::Return => {
@@ -1998,7 +1998,7 @@ pub fn emit_dropped_panic_trap(
     block_ptr: Ptr<BasicBlock>,
     prev_op: Option<Ptr<Operation>>,
 ) -> Ptr<Operation> {
-    let loc = span_to_location(ctx, term.span);
+    let loc = span_to_location(ctx, term.source_info.span);
     emit_trap_unreachable_after(ctx, block_ptr, prev_op, loc)
 }
 

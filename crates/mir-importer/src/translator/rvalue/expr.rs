@@ -390,7 +390,6 @@ pub fn translate_rvalue(
                 mir::CastKind::PointerWithExposedProvenance => {
                     MirCastKindAttr::PointerWithExposedProvenance
                 }
-                mir::CastKind::Transmute => MirCastKindAttr::Transmute,
                 // Elaborated `box` derefs turn the inner pointer into a raw
                 // pointer with this cast. Upstream documents it as "almost
                 // equivalent to a regular transmute except that if the input
@@ -399,6 +398,9 @@ pub fn translate_rvalue(
                 // regular transmute", and rustc_codegen_ssa lowers it in the
                 // same match arm as `Transmute` (mir/rvalue.rs). We follow
                 // codegen_ssa: a plain same-size bit reinterpretation.
+                mir::CastKind::Transmute | mir::CastKind::BoxDerefTransmute => {
+                    MirCastKindAttr::Transmute
+                }
                 mir::CastKind::PointerCoercion(coercion) => match coercion {
                     mir::PointerCoercion::Unsize => MirCastKindAttr::PointerCoercionUnsize,
                     mir::PointerCoercion::MutToConstPointer => {

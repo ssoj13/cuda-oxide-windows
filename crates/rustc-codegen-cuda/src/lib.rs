@@ -336,8 +336,8 @@ use rustc_metadata::EncodedMetadata;
 use rustc_middle::dep_graph::WorkProductMap;
 use rustc_middle::ty::TyCtxt;
 use rustc_middle::ty::print::with_no_trimmed_paths;
-use rustc_session::Session;
 use rustc_session::config::OutputFilenames;
+use rustc_session::{IncrCompSession, Session};
 use std::any::Any;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -807,15 +807,20 @@ impl CodegenBackend for CudaCodegenBackend {
         &self,
         ongoing_codegen: Box<dyn Any>,
         sess: &Session,
+        incr_comp_session: Option<&IncrCompSession>,
         outputs: &OutputFilenames,
         crate_info: &CrateInfo,
     ) -> (CompiledModules, WorkProductMap) {
         let ongoing = *ongoing_codegen
             .downcast::<CudaOngoingCodegen>()
             .expect("rustc_codegen_cuda received unexpected ongoing codegen state");
-        let (mut compiled_modules, work_products) =
-            self.llvm_backend
-                .join_codegen(ongoing.host, sess, outputs, crate_info);
+        let (mut compiled_modules, work_products) = self.llvm_backend.join_codegen(
+            ongoing.host,
+            sess,
+            incr_comp_session,
+            outputs,
+            crate_info,
+        );
         for (index, object) in ongoing.artifact_objects.into_iter().enumerate() {
             compiled_modules.modules.push(CompiledModule {
                 name: format!("oxide_artifact_embed_{index}"),
